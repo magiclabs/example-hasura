@@ -61,21 +61,4 @@ const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
   );
 };
 
-export default AddTodoForm;
-
-// Add below if I can add custom CSS to the <Icon> spinner
-
-// !isLoading && <Icon inline type={MonochromeIcons.Spinner} color={'#6851ff'} size={22} />
-
-// @-moz-keyframes spin {
-//   from { -moz-transform: rotate(0deg); }
-//   to { -moz-transform: rotate(360deg); }
-// }
-// @-webkit-keyframes spin {
-//   from { -webkit-transform: rotate(0deg); }
-//   to { -webkit-transform: rotate(360deg); }
-// }
-// @keyframes spin {
-//   from {transform:rotate(0deg);}
-//   to {transform:rotate(360deg);}
-// }
+export default AddTodoForm
