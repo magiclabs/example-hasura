@@ -4,6 +4,7 @@ import { CallToAction, TextButton } from '@magiclabs/ui';
 
 const Header = () => {
   const user = useUser();
+
   return (
     <header>
       <nav>
@@ -15,7 +16,15 @@ const Header = () => {
               </TextButton>
             </Link>
           </li>
-          {user ? (
+          {!user ? (
+            <li>
+              <Link href='/login'>
+                <CallToAction color='primary' size='sm'>
+                  Login
+                </CallToAction>
+              </Link>
+            </li>
+          ) : (
             <>
               <li>
                 <Link href='/profile'>
@@ -25,21 +34,13 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <a href='/api/logout'>
-                  <TextButton color='primary' size='sm'>
+                <Link href='/api/logout'>
+                  <TextButton color='warning' size='sm'>
                     Logout
                   </TextButton>
-                </a>
+                </Link>
               </li>
             </>
-          ) : (
-            <li>
-              <Link href='/login'>
-                <CallToAction color='primary' size='sm'>
-                  Login
-                </CallToAction>
-              </Link>
-            </li>
           )}
         </ul>
       </nav>
@@ -49,7 +50,6 @@ const Header = () => {
           margin: 0 auto 50px;
           padding: 1.25rem 1.25rem;
           border-bottom: 1px solid #f0f0f0;
-          box-sizing: border-box;
         }
         ul {
           display: flex;
@@ -61,9 +61,6 @@ const Header = () => {
         }
         li:first-child {
           margin-left: auto;
-        }
-        li > a {
-          text-decoration: none;
         }
       `}</style>
     </header>

@@ -12,7 +12,7 @@ const TodoItem = ({ toggleCompleted, deleteTodo, todos }) => {
                 onClick={() => toggleCompleted(todo.id, !todo.is_completed)}
               >
                 <Checkbox
-                  checked={todo.is_completed ? true : false}
+                  checked={todo.is_completed}
                   color='primary'
                   onClick={() => toggleCompleted(todo.id, !todo.is_completed)}
                 />

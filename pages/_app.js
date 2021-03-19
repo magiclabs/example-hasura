@@ -1,12 +1,13 @@
-import { ThemeProvider, ToastProvider } from '@magiclabs/ui';
+import Layout from '../components/layout';
+import { ThemeProvider } from '@magiclabs/ui';
 import '@magiclabs/ui/dist/cjs/index.css';
 
 function MyApp({ Component, pageProps }) {
   return (
     <ThemeProvider root>
-      <ToastProvider position={'top-end'}>
+      <Layout>
         <Component {...pageProps} />
-      </ToastProvider>
+      </Layout>
     </ThemeProvider>
   );
 }

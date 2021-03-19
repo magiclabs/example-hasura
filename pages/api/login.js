@@ -1,11 +1,17 @@
-import { magic } from '../../lib/magic';
+import { magic } from '../../lib/magicAdmin';
 import jwt from 'jsonwebtoken';
 import { setTokenCookie } from '../../lib/cookies';
 
 export default async function login(req, res) {
   try {
     const didToken = req.headers.authorization.substr(7);
+
+    // Validate Magic's DID token
+    await magic.token.validate(didToken);
+
     const metadata = await magic.users.getMetadataByToken(didToken);
+
+    // Create JWT
     let token = jwt.sign(
       {
         ...metadata,
@@ -14,12 +20,17 @@ export default async function login(req, res) {
           'x-hasura-default-role': 'user',
           'x-hasura-user-id': `${metadata.issuer}`,
         },
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // one week
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * SESSION_LENGTH_IN_DAYS,
       },
       process.env.JWT_SECRET
     );
+
+    // Check if user trying to log in already exists
     let newUser = await isNewUser(metadata.issuer, token);
+
+    // If not, create a new user in Hasura
     newUser && (await createNewUser(metadata, token));
+
     setTokenCookie(res, token);
     res.status(200).send({ done: true });
   } catch (error) {
@@ -37,8 +48,8 @@ async function isNewUser(issuer, token) {
     }`,
   };
   try {
-    let { users } = await queryHasura(query, token);
-    return users.length ? false : true;
+    let data = await queryHasura(query, token);
+    return data?.users.length ? false : true;
   } catch (error) {
     console.log(error);
   }

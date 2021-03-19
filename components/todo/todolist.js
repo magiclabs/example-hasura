@@ -6,7 +6,7 @@ import { useUser } from '../../lib/hooks';
 
 const TodoList = ({}) => {
   const [todoAdded, setTodoAdded] = useState(false); // refresh todos once a new todo is added
-  const { token, issuer } = useUser({ redirectTo: '/login' }); // redirect user to /login if not logged in
+  const { token, issuer } = useUser({ redirectTo: '/login' });
   const [todos, setTodos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
