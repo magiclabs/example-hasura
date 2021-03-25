@@ -4,7 +4,7 @@ import TodoList from '../components/todo/todolist';
 const Home = () => {
   const user = useUser();
 
-  return <>{user ? <TodoList /> : <div>Login to continue</div>}</>;
+  return <>{!user ? <div>Login to continue</div> : <TodoList />}</>;
 };
 
 export default Home;

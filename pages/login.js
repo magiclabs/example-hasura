@@ -33,7 +33,7 @@ const Login = () => {
         },
       });
 
-      res.status === 200 && Router.push('/profile');
+      res.status === 200 && Router.push('/');
     } catch (error) {
       setDisabled(false); // re-enable login button - user may have requested to edit their email
       console.log(error);
