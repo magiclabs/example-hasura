@@ -3,7 +3,7 @@ import { useUser } from '../../lib/hooks';
 import { Input, Icon, MonochromeIcons } from '@magiclabs/ui';
 
 const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
-  const { token, issuer } = useUser({ redirectTo: '/login' });
+  const user = useUser();
   const [todo, setTodo] = useState('');
 
   const handleSubmit = async (e) => {
@@ -15,7 +15,7 @@ const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
+        Authorization: 'Bearer ' + user?.token,
       },
       body: JSON.stringify(addTodoQuery),
     });
@@ -26,7 +26,7 @@ const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
 
   const addTodoQuery = {
     query: `mutation {
-      insert_todos_one(object: {todo: "${todo}", user_id: "${issuer}"}) {
+      insert_todos_one(object: {todo: "${todo}", user_id: "${user?.issuer}"}) {
         todo
       }
     }`,

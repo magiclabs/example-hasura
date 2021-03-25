@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Router from 'next/router';
 import { magic } from '../lib/magic';
 import { useUser } from '../lib/hooks';
@@ -6,7 +6,12 @@ import EmailForm from '../components/email-form';
 import SocialLogins from '../components/social-logins';
 
 const Login = () => {
-  useUser({ redirectTo: '/profile', redirectIfFound: true });
+  let user = useUser();
+
+  useEffect(() => {
+    if (user) user.issuer && Router.push('/profile');
+  }, [user]);
+
   const [disabled, setDisabled] = useState(false);
 
   async function handleLoginWithEmail(email) {
@@ -28,7 +33,7 @@ const Login = () => {
         },
       });
 
-      res.status === 200 && Router.push('/');
+      res.status === 200 && Router.push('/profile');
     } catch (error) {
       setDisabled(false); // re-enable login button - user may have requested to edit their email
       console.log(error);

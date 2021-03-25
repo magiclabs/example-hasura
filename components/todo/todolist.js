@@ -6,14 +6,16 @@ import { useUser } from '../../lib/hooks';
 
 const TodoList = ({}) => {
   const [todoAdded, setTodoAdded] = useState(false); // refresh todos once a new todo is added
-  const { token, issuer } = useUser({ redirectTo: '/login' });
+  const user = useUser();
   const [todos, setTodos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (todoAdded) return setTodoAdded(false); // prevent double fetching of todos
-    getTodos();
-  }, [todoAdded]);
+    if (user.issuer) {
+      if (todoAdded) return setTodoAdded(false); // prevent double fetching of todos
+      getTodos();
+    }
+  }, [todoAdded, user]);
 
   const queryHasura = async (query) => {
     try {
@@ -23,7 +25,7 @@ const TodoList = ({}) => {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          Authorization: 'Bearer ' + token,
+          Authorization: 'Bearer ' + user?.token,
         },
         body: JSON.stringify(query),
       });
@@ -37,7 +39,7 @@ const TodoList = ({}) => {
   const getTodos = async () => {
     const getTodosQuery = {
       query: `{
-        todos(where: {user_id: {_eq: "${issuer}"}}, order_by: {is_completed: asc, id: asc}) {
+        todos(where: {user_id: {_eq: "${user?.issuer}"}}, order_by: {is_completed: asc, id: asc}) {
           id
           todo
           is_completed
@@ -56,7 +58,7 @@ const TodoList = ({}) => {
   const toggleCompleted = async (id, isCompleted) => {
     const toggleCompletedQuery = {
       query: `mutation {
-        update_todos(where: {id: {_eq: "${id}"}, user_id: {_eq: "${issuer}"}}, _set: {is_completed: "${isCompleted}"}) {
+        update_todos(where: {id: {_eq: "${id}"}, user_id: {_eq: "${user?.issuer}"}}, _set: {is_completed: "${isCompleted}"}) {
           returning {
             id
           }
@@ -70,7 +72,7 @@ const TodoList = ({}) => {
   const deleteTodo = async (todoId) => {
     let deleteQuery = {
       query: `mutation {
-        delete_todos(where: {id: {_eq: "${todoId}"}, user_id: {_eq: "${issuer}"}}) {
+        delete_todos(where: {id: {_eq: "${todoId}"}, user_id: {_eq: "${user?.issuer}"}}) {
           affected_rows
         }
       }`,
@@ -82,7 +84,7 @@ const TodoList = ({}) => {
   const clearCompleted = async () => {
     let clearCompletedQuery = {
       query: `mutation {
-        delete_todos(where: {is_completed: {_eq: true}, user_id: {_eq: "${issuer}"}}) 
+        delete_todos(where: {is_completed: {_eq: true}, user_id: {_eq: "${user?.issuer}"}}) 
         {
           returning {
             id
@@ -97,7 +99,7 @@ const TodoList = ({}) => {
   const showActive = async () => {
     let showActiveQuery = {
       query: `{
-        todos(where: {user_id: {_eq: "${issuer}"}, is_completed: {_eq: false}}) {
+        todos(where: {user_id: {_eq: "${user?.issuer}"}, is_completed: {_eq: false}}) {
           id
           todo
           is_completed
@@ -112,7 +114,7 @@ const TodoList = ({}) => {
   const showCompleted = async () => {
     let showCompletedQuery = {
       query: `{
-        todos(where: {user_id: {_eq: "${issuer}"}, is_completed: {_eq: true}}) {
+        todos(where: {user_id: {_eq: "${user?.issuer}"}, is_completed: {_eq: true}}) {
           id
           todo
           is_completed

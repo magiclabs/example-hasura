@@ -15,6 +15,7 @@ const TodoItem = ({ toggleCompleted, deleteTodo, todos }) => {
                   checked={todo.is_completed}
                   color='primary'
                   onClick={() => toggleCompleted(todo.id, !todo.is_completed)}
+                  onChange={() => {}} // include this line to surpress a `Failed prop type` error
                 />
               </div>
               <div className={`todo ${todo.is_completed && 'completed'}`}>{todo.todo}</div>

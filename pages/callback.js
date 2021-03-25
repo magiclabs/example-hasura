@@ -31,7 +31,7 @@ const Callback = () => {
         Authorization: 'Bearer ' + didToken,
       },
     });
-    res.status === 200 && Router.push('/');
+    res.status === 200 && Router.push('/profile');
   };
 
   return <Loading />;

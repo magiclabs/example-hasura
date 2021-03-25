@@ -9,23 +9,18 @@ const Header = () => {
     <header>
       <nav>
         <ul>
-          <li>
-            <Link href='/'>
-              <TextButton color='primary' size='sm'>
-                Home
-              </TextButton>
-            </Link>
-          </li>
-          {!user ? (
-            <li>
-              <Link href='/login'>
-                <CallToAction color='primary' size='sm'>
-                  Login
-                </CallToAction>
-              </Link>
-            </li>
-          ) : (
+          {user?.loading ? (
+            // If loading, don't display any buttons specific to the loggedIn state
+            <div style={{ height: '38px' }}></div>
+          ) : user?.issuer ? (
             <>
+              <li>
+                <Link href='/'>
+                  <TextButton color='primary' size='sm'>
+                    Home
+                  </TextButton>
+                </Link>
+              </li>
               <li>
                 <Link href='/profile'>
                   <TextButton color='primary' size='sm'>
@@ -41,6 +36,14 @@ const Header = () => {
                 </Link>
               </li>
             </>
+          ) : (
+            <li>
+              <Link href='/login'>
+                <CallToAction color='primary' size='sm'>
+                  Login
+                </CallToAction>
+              </Link>
+            </li>
           )}
         </ul>
       </nav>

@@ -20,7 +20,7 @@ export default async function login(req, res) {
           'x-hasura-default-role': 'user',
           'x-hasura-user-id': `${metadata.issuer}`,
         },
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * SESSION_LENGTH_IN_DAYS,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * process.env.SESSION_LENGTH_IN_DAYS,
       },
       process.env.JWT_SECRET
     );
