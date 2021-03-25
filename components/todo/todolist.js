@@ -11,7 +11,7 @@ const TodoList = ({}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (user.issuer) {
+    if (user && user.issuer) {
       if (todoAdded) return setTodoAdded(false); // prevent double fetching of todos
       getTodos();
     }
