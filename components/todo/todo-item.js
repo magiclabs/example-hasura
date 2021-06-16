@@ -18,7 +18,7 @@ const TodoItem = ({ toggleCompleted, deleteTodo, todos }) => {
                   onChange={() => {}} // include this line to surpress a `Failed prop type` error
                 />
               </div>
-              <div className={`todo ${todo.is_completed && 'completed'}`}>{todo.todo}</div>
+              <div className={`todo ${todo.is_completed && 'completed'}`}>{todo.task}</div>
             </div>
             <div className='delete-btn'>
               <DuotoneIcon
