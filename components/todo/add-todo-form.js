@@ -26,8 +26,8 @@ const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
 
   const addTodoQuery = {
     query: `mutation {
-      insert_todos_one(object: {todo: "${todo}", user_id: "${user?.issuer}"}) {
-        todo
+      insert_todos_one(object: {task: "${todo}", user_id: "${user?.issuer}"}) {
+        task
       }
     }`,
   };
