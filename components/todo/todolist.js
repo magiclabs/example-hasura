@@ -101,7 +101,7 @@ const TodoList = ({}) => {
       query: `{
         todos(where: {user_id: {_eq: "${user?.issuer}"}, is_completed: {_eq: false}}) {
           id
-          todo
+          task
           is_completed
         }
       }`,
