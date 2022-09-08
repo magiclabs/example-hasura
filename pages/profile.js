@@ -9,15 +9,12 @@ const Profile = () => {
       {!user || user.loading ? (
         <Loading />
       ) : (
-        user && (
-          <>
-            <div className='label'>Email</div>
-            <div className='profile-info'>{user.email}</div>
-
-            <div className='label'>User Id</div>
-            <div className='profile-info'>{user.issuer}</div>
-          </>
-        )
+        <>
+          <div className='label'>Email</div>
+          <div className='profile-info'>{user.email}</div>
+          <div className='label'>User Id</div>
+          <div className='profile-info'>{user.issuer}</div>
+        </>
       )}
 
       <style jsx>{`

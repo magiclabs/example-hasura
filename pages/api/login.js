@@ -1,17 +1,13 @@
-import { magic } from '../../lib/magicAdmin';
 import jwt from 'jsonwebtoken';
+import { magic } from '../../lib/magicAdmin';
 import { setTokenCookie } from '../../lib/cookies';
 
 export default async function login(req, res) {
   try {
     const didToken = req.headers.authorization.substr(7);
-
-    // Validate Magic's DID token
     await magic.token.validate(didToken);
-
     const metadata = await magic.users.getMetadataByToken(didToken);
 
-    // Create JWT
     let token = jwt.sign(
       {
         ...metadata,
@@ -25,10 +21,7 @@ export default async function login(req, res) {
       process.env.JWT_SECRET
     );
 
-    // Check if user trying to log in already exists
     let newUser = await isNewUser(metadata.issuer, token);
-
-    // If not, create a new user in Hasura
     newUser && (await createNewUser(metadata, token));
 
     setTokenCookie(res, token);

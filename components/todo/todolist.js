@@ -1,21 +1,17 @@
+import { useState, useEffect } from 'react';
 import AddTodoForm from './add-todo-form';
 import TodoItem from './todo-item';
-import TodoListActions from './todolist-actions';
-import { useState, useEffect } from 'react';
 import { useUser } from '../../lib/hooks';
 
 const TodoList = ({}) => {
-  const [todoAdded, setTodoAdded] = useState(false); // refresh todos once a new todo is added
   const user = useUser();
   const [todos, setTodos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (user && user.issuer) {
-      if (todoAdded) return setTodoAdded(false); // prevent double fetching of todos
-      getTodos();
-    }
-  }, [todoAdded, user]);
+    if (!user?.issuer) return;
+    getTodos();
+  }, [user]);
 
   const queryHasura = async (query) => {
     try {
@@ -41,7 +37,7 @@ const TodoList = ({}) => {
       query: `{
         todos(where: {user_id: {_eq: "${user?.issuer}"}}, order_by: {is_completed: asc, id: asc}) {
           id
-          todo
+          task
           is_completed
         }
       }`,
@@ -81,63 +77,19 @@ const TodoList = ({}) => {
     getTodos();
   };
 
-  const clearCompleted = async () => {
-    let clearCompletedQuery = {
-      query: `mutation {
-        delete_todos(where: {is_completed: {_eq: true}, user_id: {_eq: "${user?.issuer}"}}) 
-        {
-          returning {
-            id
-          }
-        }
-      }`,
-    };
-    await queryHasura(clearCompletedQuery);
-    getTodos();
-  };
-
-  const showActive = async () => {
-    let showActiveQuery = {
-      query: `{
-        todos(where: {user_id: {_eq: "${user?.issuer}"}, is_completed: {_eq: false}}) {
-          id
-          todo
-          is_completed
-        }
-      }`,
-    };
-    let res = await queryHasura(showActiveQuery);
-    let { data, error } = await res.json();
-    error ? console.log(error) : data.todos && setTodos(data.todos);
-  };
-
-  const showCompleted = async () => {
-    let showCompletedQuery = {
-      query: `{
-        todos(where: {user_id: {_eq: "${user?.issuer}"}, is_completed: {_eq: true}}) {
-          id
-          todo
-          is_completed
-        }
-      }`,
-    };
-    let res = await queryHasura(showCompletedQuery);
-    let { data, error } = await res.json();
-    error ? console.log(error) : data.todos && setTodos(data.todos);
-  };
-
   return (
     <div className='todo-list-container'>
-      <AddTodoForm setTodoAdded={setTodoAdded} isLoading={isLoading} setIsLoading={setIsLoading} />
-      <TodoItem todos={todos} deleteTodo={deleteTodo} toggleCompleted={toggleCompleted} />
-      <TodoListActions
-        todos={todos?.length}
+      <AddTodoForm 
         getTodos={getTodos}
-        showAll={getTodos}
-        showActive={showActive}
-        showCompleted={showCompleted}
-        clearCompleted={clearCompleted}
-      />
+        isLoading={isLoading} 
+        setIsLoading={setIsLoading} 
+        />
+      <TodoItem 
+        todos={todos} 
+        deleteTodo={deleteTodo} 
+        toggleCompleted={toggleCompleted} 
+        />
+      <div className='number-of-tasks'>{`Tasks: ${todos?.length}`}</div>
       <style jsx>{`
         .todo-list-container {
           width: 90%;
@@ -145,6 +97,11 @@ const TodoList = ({}) => {
           margin: 0 auto;
           box-shadow: 0px 0px 6px 6px #eee;
           border-radius: 10px;
+        }
+        .number-of-tasks {
+          color: gray;
+          padding: 10px;
+          margin: 4px 8px;
         }
       `}</style>
     </div>

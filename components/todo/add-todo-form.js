@@ -2,10 +2,18 @@ import { useState } from 'react';
 import { useUser } from '../../lib/hooks';
 import { Input, Icon, MonochromeIcons } from '@magiclabs/ui';
 
-const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
+const AddTodoForm = ({ getTodos, isLoading, setIsLoading }) => {
   const user = useUser();
   const [todo, setTodo] = useState('');
 
+  const addTodoQuery = {
+    query: `mutation {
+      insert_todos_one(object: {task: "${todo}", user_id: "${user?.issuer}", is_completed: false}) {
+        task
+      }
+    }`,
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!todo) return;
@@ -21,19 +29,10 @@ const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
     });
     setTodo('');
     setIsLoading(false);
-    setTodoAdded(true);
-  };
-
-  const addTodoQuery = {
-    query: `mutation {
-      insert_todos_one(object: {todo: "${todo}", user_id: "${user?.issuer}"}) {
-        todo
-      }
-    }`,
+    getTodos();
   };
 
   return (
-    <>
       <form onSubmit={handleSubmit}>
         <Input
           placeholder='Enter your task'
@@ -52,7 +51,6 @@ const AddTodoForm = ({ setTodoAdded, isLoading, setIsLoading }) => {
           }
         />
       </form>
-    </>
   );
 };
 

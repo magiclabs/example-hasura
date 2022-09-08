@@ -3,8 +3,7 @@ import TodoList from '../components/todo/todolist';
 
 const Home = () => {
   const user = useUser();
-
-  return <>{!user ? <div>Login to continue</div> : <TodoList />}</>;
+  return !user ? <div>Login to continue</div> : <TodoList />;
 };
 
 export default Home;

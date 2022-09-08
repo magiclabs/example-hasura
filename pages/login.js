@@ -1,56 +1,67 @@
-import { useState, useEffect } from 'react';
 import Router from 'next/router';
+import { useState, useEffect } from 'react';
 import { magic } from '../lib/magic';
 import { useUser } from '../lib/hooks';
-import EmailForm from '../components/email-form';
-import SocialLogins from '../components/social-logins';
+import { Input, Icon, MonochromeIcons, CallToAction } from '@magiclabs/ui';
 
 const Login = () => {
-  let user = useUser();
-
-  useEffect(() => {
-    if (user) user.issuer && Router.push('/profile');
-  }, [user]);
-
+  const user = useUser();
+  const [email, setEmail] = useState('');
   const [disabled, setDisabled] = useState(false);
 
-  async function handleLoginWithEmail(email) {
+  useEffect(() => {
+    if (user?.issuer) Router.push('/profile');
+  }, [user]);
+
+  const validateWithServer = async (didToken) => {
+    return await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + didToken,
+      },
+    });
+  }
+
+  async function handleLoginWithEmail(e) {
     try {
-      setDisabled(true); // disable login button to prevent multiple emails from being triggered
-
-      // Trigger Magic link to be sent to user
-      let didToken = await magic.auth.loginWithMagicLink({
-        email,
-        redirectURI: new URL('/callback', window.location.origin).href, // optional redirect back to your app after magic link is clicked
-      });
-
-      // Validate didToken with server
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + didToken,
-        },
-      });
-
+      e.preventDefault();
+      if (!email) return;
+      setDisabled(true);
+      const didToken = await magic.auth.loginWithEmailOTP({ email });
+      const res = await validateWithServer(didToken)
       res.status === 200 && Router.push('/');
     } catch (error) {
-      setDisabled(false); // re-enable login button - user may have requested to edit their email
+      setDisabled(false);
       console.log(error);
     }
   }
 
-  async function handleLoginWithSocial(provider) {
-    await magic.oauth.loginWithRedirect({
-      provider,
-      redirectURI: new URL('/callback', window.location.origin).href,
-    });
-  }
-
   return (
     <div className='login'>
-      <EmailForm disabled={disabled} onEmailSubmit={handleLoginWithEmail} />
-      <SocialLogins onSubmit={handleLoginWithSocial} />
+      <form onSubmit={handleLoginWithEmail}>
+        <h3 className='form-header'>Login</h3>
+        <div className='input-wrapper'>
+          <Input
+            placeholder='Enter your email'
+            size='sm'
+            type='email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            prefix={<Icon inline type={MonochromeIcons.Envelope} size={22} />}
+          />
+        </div>
+        <div>
+          <CallToAction
+            color='primary'
+            size='sm'
+            disabled={disabled}
+            onClick={handleLoginWithEmail}
+          >
+            Send Email OTP
+          </CallToAction>
+        </div>
+      </form>
       <style jsx>{`
         .login {
           max-width: 20rem;
@@ -61,6 +72,23 @@ const Login = () => {
           text-align: center;
           box-shadow: 0px 0px 6px 6px #f7f7f7;
           box-sizing: border-box;
+        }
+        form {
+          padding-bottom: 40px;
+        }
+        form,
+        label {
+          display: flex;
+          flex-flow: column;
+          text-align: center;
+        }
+        .form-header {
+          font-size: 22px;
+          margin: 25px 0;
+        }
+        .input-wrapper {
+          width: 75%;
+          margin: 0 auto 20px;
         }
       `}</style>
     </div>
