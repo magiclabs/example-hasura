@@ -1,7 +1,7 @@
 {
   "name": "magic-hasura",
   "scripts": {
-    "dev": "next -p 3005",
+    "dev": "next",
     "build": "next build",
     "start": "next start"
   },
